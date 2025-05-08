@@ -1,0 +1,167 @@
+.product-detail-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.product-detail {
+  display: flex;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.product-detail-image {
+  flex: 1 1 50%;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.product-detail-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.product-detail-info {
+  flex: 1 1 50%;
+  padding: 30px;
+}
+
+.product-detail-info h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.price {
+  font-size: 24px;
+  color: #d0021b;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.short-desc {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.rating-views {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.order-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.order-section input {
+  width: 60px;
+  padding: 5px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.order-btn {
+  background: #0070f3;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.order-btn:hover {
+  background: #005bb5;
+}
+
+.product-meta p {
+  margin: 5px 0;
+  font-size: 15px;
+}
+
+.product-tags {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.product-extra {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+}
+
+.product-extra h2 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.product-extra ul {
+  list-style: none;
+  padding: 0;
+}
+
+.product-extra li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.in-stock {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.out-stock {
+  color: #d0021b;
+  font-weight: bold;
+}
+
+.loading, .error {
+  text-align: center;
+  margin: 40px 0;
+  font-size: 18px;
+  color: #d0021b;
+}
+
+@media (max-width: 768px) {
+  .product-detail {
+    flex-direction: column;
+  }
+
+  .product-detail-image,
+  .product-detail-info {
+    flex: 1 1 100%;
+  }
+
+  .product-detail-info {
+    padding: 20px;
+  }
+}
