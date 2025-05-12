@@ -5,20 +5,36 @@ const path = require('path');
 const productController = require('../controllers/productController');
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination(req, file, cb) {
     cb(null, 'public/uploads/');
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+  filename(req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 const upload = multer({ storage });
 
+router.post(
+  '/',
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'descriptionImages', maxCount: 10 },
+  ]),
+  productController.createProduct
+);
+
+router.put(
+  '/:id',
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'descriptionImages', maxCount: 10 },
+  ]),
+  productController.updateProduct
+);
+
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
-router.post('/', upload.single('image'), productController.createProduct);
-router.put('/:id', upload.single('image'), productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
-router.patch('/update-hot', productController.updateHotProducts);
+router.patch('/hot/update', productController.updateHotProducts);
 
 module.exports = router;

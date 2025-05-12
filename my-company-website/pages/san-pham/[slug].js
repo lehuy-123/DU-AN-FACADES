@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import axios from 'axios';
+import Showdown from 'showdown';
 
 export default function ProductDetail() {
   const router = useRouter();
   const { slug } = router.query;
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const converter = new Showdown.Converter();
 
   useEffect(() => {
     if (slug) {
@@ -17,6 +20,7 @@ export default function ProductDetail() {
           setLoading(true);
           const res = await axios.get(`http://localhost:5001/api/products/${slug}`);
           setProduct(res.data);
+          fetchRelatedProducts(res.data.category?._id);
         } catch (err) {
           console.error(err);
           setError('Không tìm thấy sản phẩm hoặc lỗi server.');
@@ -27,6 +31,15 @@ export default function ProductDetail() {
       fetchProduct();
     }
   }, [slug]);
+
+  const fetchRelatedProducts = async (categoryId) => {
+    try {
+      const res = await axios.get(`http://localhost:5001/api/products?category=${categoryId}`);
+      setRelatedProducts(res.data.filter(p => p.slug !== slug));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (loading) return <p className="loading">Đang tải sản phẩm...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -88,10 +101,37 @@ export default function ProductDetail() {
             </div>
 
             <div className="product-tags">
-              <p><strong>Tags:</strong> #nhôm #kính #facade #cao cấp</p>
+              <p><strong>Tags:</strong> {product.tags?.join(', ') || '#nhôm #kính #facade #cao cấp'}</p>
             </div>
           </div>
         </article>
+
+        <section className="product-description">
+          <h2>Mô tả chi tiết</h2>
+          <div
+            className="description-content"
+            dangerouslySetInnerHTML={{
+              __html: converter.makeHtml(product.description || 'Đang cập nhật mô tả chi tiết.')
+            }}
+          />
+        </section>
+
+        <section className="related-products">
+          <h2>Sản phẩm liên quan</h2>
+          <div className="product-grid">
+            {relatedProducts.length === 0 ? (
+              <p>Không có sản phẩm liên quan.</p>
+            ) : (
+              relatedProducts.map((rel) => (
+                <a key={rel._id} href={`/san-pham/${rel.slug}`} className="product-card">
+                  <img src={`http://localhost:5001${rel.image}`} alt={rel.name} />
+                  <h3>{rel.name}</h3>
+                  <p className="price">{Number(rel.price).toLocaleString()} đ</p>
+                </a>
+              ))
+            )}
+          </div>
+        </section>
 
         <section className="product-extra">
           <h2>Vì sao chọn FCD?</h2>

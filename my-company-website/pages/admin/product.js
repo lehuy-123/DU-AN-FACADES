@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import ReactMde from 'react-mde';
+import Showdown from 'showdown';
+import 'react-mde/lib/styles/css/react-mde-all.css';
 
 export default function AdminProductPage() {
   const [products, setProducts] = useState([]);
@@ -8,12 +10,16 @@ export default function AdminProductPage() {
   const [formData, setFormData] = useState({
     name: '',
     shortDesc: '',
+    description: '',
     price: '',
     image: null,
+    descriptionImages: [],
     category: '',
   });
   const [newCategory, setNewCategory] = useState({ name: '', parent: '' });
   const [editingId, setEditingId] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('write');
+  const converter = new Showdown.Converter();
 
   useEffect(() => {
     fetchProducts();
@@ -40,7 +46,11 @@ export default function AdminProductPage() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: name === 'image' ? files[0] : value });
+    if (name === 'image') {
+      setFormData({ ...formData, image: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -56,7 +66,7 @@ export default function AdminProductPage() {
       } else {
         await axios.post('http://localhost:5001/api/products', data);
       }
-      setFormData({ name: '', shortDesc: '', price: '', image: null, category: '' });
+      setFormData({ name: '', shortDesc: '', description: '', price: '', image: null, category: '' });
       setEditingId(null);
       document.querySelector('input[name="image"]').value = '';
       fetchProducts();
@@ -69,6 +79,7 @@ export default function AdminProductPage() {
     setFormData({
       name: product.name,
       shortDesc: product.shortDesc,
+      description: product.description || '',
       price: product.price,
       image: null,
       category: product.category?._id || '',
@@ -96,14 +107,22 @@ export default function AdminProductPage() {
     }
   };
 
-  const handleDeleteCategory = async (id) => {
-    if (window.confirm('Bạn có chắc muốn xoá danh mục này?')) {
-      try {
-        await axios.delete(`http://localhost:5001/api/categories/${id}`);
-        fetchCategories();
-      } catch (err) {
-        console.error(err);
-      }
+  const handleMarkdownImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const data = new FormData();
+    data.append('image', file);
+
+    try {
+      const res = await axios.post('http://localhost:5001/api/upload', data);
+      const imageUrl = `http://localhost:5001${res.data.url}`;
+      setFormData({
+        ...formData,
+        description: `${formData.description}\n\n![ảnh](${imageUrl})`,
+      });
+    } catch (err) {
+      console.error('Upload ảnh thất bại', err);
     }
   };
 
@@ -112,38 +131,21 @@ export default function AdminProductPage() {
       <h1>Quản lý Sản phẩm</h1>
 
       <div className="category-form">
-        <input
-          type="text"
-          placeholder="Tên danh mục mới"
-          value={newCategory.name}
-          onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-        />
-        <select
-          value={newCategory.parent}
-          onChange={(e) => setNewCategory({ ...newCategory, parent: e.target.value })}
-        >
+        <input type="text" placeholder="Tên danh mục mới" value={newCategory.name} onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })} />
+        <select value={newCategory.parent} onChange={(e) => setNewCategory({ ...newCategory, parent: e.target.value })}>
           <option value="">Chọn danh mục cha (nếu có)</option>
           {categories.filter(cat => !cat.parent).map((parent) => (
-            <option key={parent._id} value={parent._id}>
-              {parent.name}
-            </option>
+            <option key={parent._id} value={parent._id}>{parent.name}</option>
           ))}
         </select>
         <button onClick={handleAddCategory}>Thêm danh mục</button>
       </div>
 
-      <ul className="category-list">
-        {categories.map(cat => (
-          <li key={cat._id}>
-            {cat.name}
-            <button onClick={() => handleDeleteCategory(cat._id)}>Xoá</button>
-          </li>
-        ))}
-      </ul>
-
       <form onSubmit={handleSubmit} className="product-form">
         <input type="text" name="name" placeholder="Tên sản phẩm" value={formData.name} onChange={handleChange} required />
         <input type="text" name="shortDesc" placeholder="Mô tả ngắn" value={formData.shortDesc} onChange={handleChange} required />
+        <ReactMde value={formData.description} onChange={(value) => setFormData({ ...formData, description: value })} selectedTab={selectedTab} onTabChange={setSelectedTab} generateMarkdownPreview={(markdown) => Promise.resolve(converter.makeHtml(markdown))} />
+        <input type="file" name="markdownImage" accept="image/*" onChange={handleMarkdownImageUpload} />
         <input type="number" name="price" placeholder="Giá" value={formData.price} onChange={handleChange} required />
         <input type="file" name="image" accept="image/*" onChange={handleChange} />
         <select name="category" value={formData.category} onChange={handleChange} required>
@@ -173,9 +175,7 @@ export default function AdminProductPage() {
         <tbody>
           {products.map(prd => (
             <tr key={prd._id}>
-              <td>
-                <img src={`http://localhost:5001${prd.image}`} alt={prd.name} width="80" onError={(e) => { e.target.src = 'https://via.placeholder.com/80'; }} />
-              </td>
+              <td><img src={`http://localhost:5001${prd.image}`} alt={prd.name} width="80" onError={(e) => { e.target.src = 'https://via.placeholder.com/80'; }} /></td>
               <td>{prd.name}</td>
               <td>{Number(prd.price).toLocaleString()} đ</td>
               <td>{prd.category ? (prd.category.parent ? `${prd.category.parent.name} → ${prd.category.name}` : prd.category.name) : 'Không có'}</td>

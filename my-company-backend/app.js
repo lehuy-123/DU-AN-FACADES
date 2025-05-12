@@ -1,22 +1,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const categoryRoutes = require('./routes/categoryRoutes');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+
+const categoryRoutes = require('./routes/categoryRoutes');
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');  // ✅ thêm dòng này
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api/categories', categoryRoutes);
-// Static folder để phục vụ ảnh upload
+
+// Serve static folder để load ảnh upload từ client
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/categories', categoryRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/upload', uploadRoutes);   // ✅ thêm route upload
 
 // Kết nối MongoDB
 mongoose.connect(process.env.MONGODB_URI, {

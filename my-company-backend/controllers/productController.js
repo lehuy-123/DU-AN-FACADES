@@ -11,7 +11,6 @@ exports.getAllProducts = async (req, res) => {
       if (!selectedCategory) {
         return res.status(404).json({ error: 'Category not found' });
       }
-
       if (!selectedCategory.parent) {
         const childCategories = await Category.find({ parent: selectedCategory._id });
         const categoryIds = [selectedCategory._id, ...childCategories.map(c => c._id)];
@@ -48,19 +47,25 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const { name, shortDesc, price, category, views, sales, rating, seoScore } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : '';
+    const { name, shortDesc, description, price, category, views, sales, rating, seoScore } = req.body;
+    const image = req.files && req.files['image'] ? `/uploads/${req.files['image'][0].filename}` : '';
+    const descriptionImages = req.files && req.files['descriptionImages']
+      ? req.files['descriptionImages'].map(f => `/uploads/${f.filename}`)
+      : [];
 
     const newProduct = new Product({
       name,
       shortDesc,
+      description,
       price: Number(price),
       image,
+      descriptionImages,
       category: category || null,
       views: Number(views) || 0,
       sales: Number(sales) || 0,
       rating: Number(rating) || 0,
       seoScore: Number(seoScore) || 0,
+      isHot: false,
     });
 
     await newProduct.save();
@@ -78,12 +83,16 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const { name, shortDesc, price, category, views, sales, rating, seoScore } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const { name, shortDesc, description, price, category, views, sales, rating, seoScore } = req.body;
+    const image = req.files && req.files['image'] ? `/uploads/${req.files['image'][0].filename}` : undefined;
+    const descriptionImages = req.files && req.files['descriptionImages']
+      ? req.files['descriptionImages'].map(f => `/uploads/${f.filename}`)
+      : undefined;
 
     const updatedFields = {
       name,
       shortDesc,
+      description,
       price: Number(price),
       views: Number(views) || 0,
       sales: Number(sales) || 0,
@@ -92,6 +101,7 @@ exports.updateProduct = async (req, res) => {
     };
     if (image) updatedFields.image = image;
     if (category) updatedFields.category = category;
+    if (descriptionImages) updatedFields.descriptionImages = descriptionImages;
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,

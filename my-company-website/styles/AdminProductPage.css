@@ -269,4 +269,108 @@
     max-width: 60px;
     height: auto;
   }
+  .admin-product-page {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
   
+  .admin-product-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+  
+  .category-form,
+  .product-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .category-form input,
+  .product-form input,
+  .product-form select,
+  .category-form select {
+    flex: 1 1 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  
+  .category-form button,
+  .product-form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .category-form button:hover,
+  .product-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .product-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .product-table th,
+  .product-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .product-table th {
+    background-color: #f8f9fa;
+  }
+  
+  .product-table img {
+    max-width: 60px;
+    height: auto;
+  }
+  
+  button {
+    margin: 0 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+
+/* Make Write and Preview tabs visible with background and border */
+.react-mde-tab {
+  color: #333 !important;
+  background-color: #f0f0f0 !important;
+  border: 1px solid #bbb !important;
+  padding: 6px 14px !important;
+  border-radius: 6px 6px 0 0 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+}
+
+/* Highlight active tab */
+.react-mde-tab.react-mde-tab-selected {
+  background-color: #007bff !important;
+  color: white !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+/* Add hover effect */
+.react-mde-tab:hover {
+  background-color: #e0e0e0 !important;
+  color: #111 !important;
+  cursor: pointer !important;
+}
