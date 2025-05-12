@@ -12,15 +12,15 @@ export default async function handler(req, res) {
     let transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
-        user: 'huy01082004@gmail.com',       
-        pass: 'mharcgmmwloquubz' 
+        user: 'tan.aluminum@gmail.com',       
+        pass: 'tdirvkyqkothcbug' 
       }
     });
 
     // Cấu hình email
     let mailOptions = {
       from: email,                         
-      to: 'huy01082004@gmail.com',          
+      to: 'tan.aluminum@gmail.com',          
       subject: `Liên hệ từ ${name}`,
       text: `Email: ${email}\nNội dung: ${message}`
     };
